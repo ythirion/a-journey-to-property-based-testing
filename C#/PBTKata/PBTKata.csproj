@@ -11,11 +11,13 @@
     <None Remove="LanguageExt.Core" />
     <None Remove="Math\" />
     <None Remove="Post\" />
+    <None Remove="Rental\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bank\" />
     <Folder Include="Math\" />
     <Folder Include="Post\" />
+    <Folder Include="Rentals\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="4.0.3" />

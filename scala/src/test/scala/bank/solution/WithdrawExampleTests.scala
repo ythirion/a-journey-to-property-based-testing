@@ -16,7 +16,6 @@ import java.util.UUID
 class WithdrawExampleTests
     extends AnyFlatSpec
     with TableDrivenPropertyChecks
-    with Checkers
     with EitherValues {
 
   "withdraw" should "pass examples" in {
