@@ -17,6 +17,6 @@ namespace PBTKata.Bank
 
     public static class AmountExtensions
     {
-        public static Option<Amount> From(this decimal amount) => Amount.From(amount);
+        public static Option<Amount> ToAmount(this decimal amount) => Amount.From(amount);
     }
 }

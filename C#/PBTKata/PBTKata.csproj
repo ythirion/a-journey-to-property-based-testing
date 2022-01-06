@@ -10,10 +10,12 @@
     <None Remove="Bank\" />
     <None Remove="LanguageExt.Core" />
     <None Remove="Math\" />
+    <None Remove="Post\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bank\" />
     <Folder Include="Math\" />
+    <Folder Include="Post\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LanguageExt.Core" Version="4.0.3" />
