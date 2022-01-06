@@ -31,12 +31,16 @@
     <None Remove="FsCheck.Xunit" />
     <None Remove="Math\Solution\" />
     <None Remove="Post\Solution\" />
+    <None Remove="Bank\" />
+    <None Remove="Bank\Solution\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Math\" />
     <Folder Include="Post\" />
     <Folder Include="Math\Solution\" />
     <Folder Include="Post\Solution\" />
+    <Folder Include="Bank\" />
+    <Folder Include="Bank\Solution\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PBTKata\PBTKata.csproj" />

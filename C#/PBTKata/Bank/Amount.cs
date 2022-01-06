@@ -13,10 +13,11 @@ namespace PBTKata.Bank
         public static bool operator >(Amount a, Amount b) => a.Value > b.Value;
         public static bool operator <(Amount a, Amount b) => a.Value < b.Value;
         public static Amount operator -(Amount a, Amount b) => a with { Value = a.Value - b.Value };
+        public static Amount operator +(Amount a, Amount b) => a with { Value = a.Value + b.Value };
     }
 
     public static class AmountExtensions
     {
-        public static Option<Amount> ToAmount(this decimal amount) => Amount.From(amount);
+        public static Amount ToAmountUnsafe(this decimal amount) => Amount.From(amount).GetUnsafe();
     }
 }
