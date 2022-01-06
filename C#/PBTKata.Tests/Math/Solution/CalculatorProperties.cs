@@ -6,9 +6,10 @@ namespace PBTKata.Tests.Math.Solution
 {
     public class CalculatorProperties
     {
+        // We can collect data on generated inputs through Colect method
         [Property]
         public Property Commutativity(int x, int y)
-            => (Add(x, y) == Add(y, x)).ToProperty();
+            => (Add(x, y) == Add(y, x)).ToProperty().Collect($"x={x},y={y}");
 
         [Property]
         public Property Associativity(int x)

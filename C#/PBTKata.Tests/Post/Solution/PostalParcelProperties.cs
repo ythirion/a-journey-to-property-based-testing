@@ -1,5 +1,4 @@
-﻿using System;
-using FsCheck;
+﻿using FsCheck;
 using FsCheck.Xunit;
 using LanguageExt;
 using Xunit;
@@ -10,7 +9,7 @@ using static PBTKata.Post.PostalParcelService;
 namespace PBTKata.Tests.Post.Solution
 {
     public class PostalParcelProperties
-    {       
+    {
         [Fact]
         public void MaxDeliveryCostWhenWeightGreaterThanMaxWeight()
             => Prop.ForAll(Arb.Default.Float().Filter(x => x > MaxWeight),
