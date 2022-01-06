@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using LanguageExt;
+using PBTKata.Rentals;
 using static LanguageExt.Prelude;
 
-namespace PBTKata.Rentals
+namespace PBTKata.Tests.Rentals.Solution
 {
-    public class RentalCalculator
+    public class NewRentalCalculator
     {
         public List<Rental> Rentals { get; init; }
         public bool Calculated { get { return calculated; } }
@@ -14,7 +16,7 @@ namespace PBTKata.Rentals
         private double amount = 0;
         private bool calculated = false;
 
-        public RentalCalculator(List<Rental> rentals)
+        public NewRentalCalculator(List<Rental> rentals)
         {
             Rentals = rentals;
         }

@@ -33,6 +33,8 @@
     <None Remove="Post\Solution\" />
     <None Remove="Bank\" />
     <None Remove="Bank\Solution\" />
+    <None Remove="Rentals\" />
+    <None Remove="Rentals\Solution\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Math\" />
@@ -41,6 +43,8 @@
     <Folder Include="Post\Solution\" />
     <Folder Include="Bank\" />
     <Folder Include="Bank\Solution\" />
+    <Folder Include="Rentals\" />
+    <Folder Include="Rentals\Solution\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PBTKata\PBTKata.csproj" />
