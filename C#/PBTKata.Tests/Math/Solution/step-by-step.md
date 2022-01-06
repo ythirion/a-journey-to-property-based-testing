@@ -1,77 +1,65 @@
-## Postal Parcel
-* Which kind of properties could we identify ?
+## Calculator
+* We use [FsCheck](https://fscheck.github.io/FsCheck/) to implement our `Properties`
+* It integrates well with `XUnit` through `FsCheck.XUnit`
+
+With FsCheck we have 2 options when writing properties :
+
+### Use PropertyAttribute
+* We define our properties by creating methods :
+    * annotated with the `PropertyAttribute`
+    * taking random inputs as parameters
+    * returning a Property
+        * FsCheck define extension method on bool : `ToProperty()`
 
 ```csharp
-public record PostalParcel
+public class CalculatorProperties
 {
-    public const double MaxWeight = 20;
-    public const double MinDeliveryCost = 1.99;
-    public const double MaxDeliveryCost = 4.99;
+    [Property]
+    public Property Commutativity(int x, int y)
+        => (Add(x, y) == Add(y, x)).ToProperty();
 
-    public double Weight { get; private init; }
-    public static Option<PostalParcel> From(double weight) =>
-        weight > 0 ? new PostalParcel { Weight = weight } : None;
+    [Property]
+    public Property Associativity(int x)
+        => (Add(Add(x, 1), 1) == Add(x, 2)).ToProperty();
+
+    [Property]
+    public Property Identity(int x)
+        => (Add(x, 0) == x).ToProperty();
 }
+```
 
-public static class PostalParcelService
+* We can collect data on the inputs with the `Collect` method :
+
+```csharp
+[Property]
+public Property Commutativity(int x, int y)
+    => (Add(x, y) == Add(y, x)).ToProperty().Collect($"x={x},y={y}");
+```
+
+> With this option it is harder to pass custom Generator to create random inputs (look at PostalParcel example)
+
+### Use XUnit Fact
+* We define our tests as usual with XUnit
+    * We use `Prop.ForAll` to define our properties
+    * We check them with the `QuickCheckThrowOnFailure()` method
+        * That will throw an exception in case of unsatisfied property
+
+```csharp
+public class CalculatorPropertiesWithXUnitFact
 {
-    public static Option<double> CalculateDeliveryCosts(Option<PostalParcel> postalParcel) =>
-        postalParcel.Map(p => p.Weight > PostalParcel.MaxWeight ? PostalParcel.MaxDeliveryCost : PostalParcel.MinDeliveryCost);
-}
-```
-
-* for all `Weight` <= 0 `delivery cost` should be None
-* for all `Weight` > MaxWeight `delivery cost` should be max
-* for all `Weight` <= MaxWeight `delivery cost` should be min
-
-* To check our properties we need to either :
-  * Filter our inputs with pre-condition (`Filter` method on Arbitrary<double>) :
-
-```csharp
-[Fact]
-public void MaxDeliveryCostWhenWeightGreaterThanMaxWeight()
-    => Prop.ForAll(Arb.Default.Float().Filter(x => x > MaxWeight),
-            weight => CalculateCost(weight) == MaxDeliveryCost)
-            .QuickCheckThrowOnFailure();
-```
-
-* Or create custom Arbitrary
-
-```csharp
-private Arbitrary<double> greaterThanMaxWeight =
-    Arb.Default.Float().MapFilter(x => System.Math.Abs(x), x => x > MaxWeight);
- 
-[Fact]
-public void MaxDeliveryCostWhenWeightGreaterThanMaxWeight()
-    => Prop.ForAll(greaterThanMaxWeight,
-            weight => CalculateCost(weight) == MaxDeliveryCost)
-            .QuickCheckThrowOnFailure();
-```
-
-* Let's use pre-conditions for this example :
-
-```csharp
-public class PostalParcelProperties
-{       
     [Fact]
-    public void MaxDeliveryCostWhenWeightGreaterThanMaxWeight()
-        => Prop.ForAll(Arb.Default.Float().Filter(x => x > MaxWeight),
-                weight => CalculateCost(weight) == MaxDeliveryCost)
+    public void Commutativity()
+        => Prop.ForAll<int, int>((x, y) => Add(x, y) == Add(y, x))
                 .QuickCheckThrowOnFailure();
 
     [Fact]
-    public void MinDeliveryCostWhenWeightLowerOrEqualsMaxWeight()
-        => Prop.ForAll(Arb.Default.Float().Filter(x => x > 0 && x <= MaxWeight),
-                weight => CalculateCost(weight) == MinDeliveryCost)
+    public void Associativity()
+        => Prop.ForAll<int>(x => Add(Add(x, 1), 1) == Add(x, 2))
                 .QuickCheckThrowOnFailure();
 
     [Fact]
-    public void NoneWhenWeightLowerOrEquals0()
-        => Prop.ForAll(Arb.Default.Float().Filter(x => x <= 0),
-                weight => CalculateCost(weight) == None)
+    public void Identity()
+        => Prop.ForAll<int>(x => Add(x, 0) == x)
                 .QuickCheckThrowOnFailure();
-
-    private static Option<double> CalculateCost(double weight)
-        => CalculateDeliveryCosts(From(weight));
 }
 ```

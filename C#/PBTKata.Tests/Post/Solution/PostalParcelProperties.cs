@@ -14,7 +14,7 @@ namespace PBTKata.Tests.Post.Solution
         public void MaxDeliveryCostWhenWeightGreaterThanMaxWeight()
             => Prop.ForAll(Arb.Default.Float().Filter(x => x > MaxWeight),
                     weight => CalculateCost(weight) == MaxDeliveryCost)
-                    .QuickCheckThrowOnFailure();
+                   .QuickCheckThrowOnFailure();
 
         [Fact]
         public void MinDeliveryCostWhenWeightLowerOrEqualsMaxWeight()
