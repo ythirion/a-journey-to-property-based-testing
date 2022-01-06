@@ -3,6 +3,7 @@ using FsCheck;
 using LanguageExt;
 using PBTKata.Bank;
 using Xunit;
+using static LanguageExt.Prelude;
 using static System.Math;
 
 namespace PBTKata.Tests.Bank.Solution
@@ -21,7 +22,7 @@ namespace PBTKata.Tests.Bank.Solution
             => CheckProperty(
                 (account, withdraw) => account.WithEnoughMoney(withdraw)
                                         .WithoutReachingMaxWithdrawal(withdraw),
-                (account, withdraw, debitedAccount) => debitedAccount.RightValueUnsafe().Balance <= account.Balance - withdraw.Amount);
+                (account, withdraw, debitedAccount) => debitedAccount.RightValueUnsafe().Balance <= account.Balance - withdraw.Amount.Value);
 
         [Fact]
         public void BalanceShouldBeDecrementedAtLeastFromTheWithdrawAmountWhenInsufficientBalanceButOverdraftAuthorized()
@@ -29,7 +30,7 @@ namespace PBTKata.Tests.Bank.Solution
                 (account, withdraw) => account.WithInsufficientBalance(withdraw)
                                         .WithoutReachingMaxWithdrawal(withdraw)
                                         .WithOverDraftAuthorized(),
-                (account, withdraw, debitedAccount) => debitedAccount.RightValueUnsafe().Balance <= account.Balance - withdraw.Amount);
+                (account, withdraw, debitedAccount) => debitedAccount.RightValueUnsafe().Balance <= account.Balance - withdraw.Amount.Value);
 
         [Fact]
         public void WithdrawShouldNotBeAllowedWhenWithdrawAmountGreaterThanMaxWithdrawal()

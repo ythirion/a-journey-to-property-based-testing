@@ -1,4 +1,5 @@
 ﻿using LanguageExt;
+using static LanguageExt.Prelude;
 
 namespace PBTKata.Bank
 {
@@ -10,14 +11,14 @@ namespace PBTKata.Bank
         private static Either<String, Account> Apply(Account account, Withdraw command)
         {
             if (ExceedMaxwithdrawal(account, command))
-                return $"Amount exceeding your limit of {account.MaxWithdrawal}";
+                return Left($"Amount exceeding your limit of {account.MaxWithdrawal}");
             else if (ExceedBalance(account, command))
-                return $"Insufficient balance to withdraw : {command.Amount.Value}";
-            else return account.Withdraw(command);
+                return Left($"Insufficient balance to withdraw : {command.Amount.Value}");
+            else return Right(account.Withdraw(command));
         }
 
         private static bool HasAlreadyBeenApplied(Account account, Withdraw command) => account.Withdraws.Contains(command);
         private static bool ExceedMaxwithdrawal(Account account, Withdraw command) => command.Amount >= account.MaxWithdrawal;
-        private static bool ExceedBalance(Account account, Withdraw command) => command.Amount > account.Balance && !account.IsOverdraftAuthorized;
+        private static bool ExceedBalance(Account account, Withdraw command) => command.Amount.Value > account.Balance && !account.IsOverdraftAuthorized;
     }
 }

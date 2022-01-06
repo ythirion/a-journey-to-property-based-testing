@@ -6,7 +6,7 @@ namespace PBTKata.Tests.Bank.Solution
 {
     public static class AccountBuilder
     {
-        public static Account Empty() => new(100m.ToAmountUnsafe(), false, 200m.ToAmountUnsafe(), null);
+        public static Account Empty() => new(0, false, 200m.ToAmountUnsafe(), null);
     }
 
     public static class AccountExtensions
@@ -20,10 +20,10 @@ namespace PBTKata.Tests.Bank.Solution
                 .ToAmountUnsafe();
 
         public static Account WithEnoughMoney(this Account account, Withdraw command) =>
-            account with { Balance = command.Amount + ArbitraryAmount() };
+            account with { Balance = (command.Amount + ArbitraryAmount()).Value };
 
         public static Account WithInsufficientBalance(this Account account, Withdraw command) =>
-            account with { Balance = command.Amount - ArbitraryAmount() };
+            account with { Balance = (command.Amount - ArbitraryAmount()).Value };
 
         public static Account WithdrawAmountReachingMaxWithdrawal(this Account account, Withdraw command) =>
             account with { MaxWithdrawal = command.Amount - ArbitraryAmount() };
@@ -38,4 +38,3 @@ namespace PBTKata.Tests.Bank.Solution
             account with { IsOverdraftAuthorized = true };
     }
 }
-

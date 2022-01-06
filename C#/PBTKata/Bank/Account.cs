@@ -3,7 +3,7 @@
 namespace PBTKata.Bank
 {
     public record Account(
-        Amount Balance,
+        decimal Balance,
         bool IsOverdraftAuthorized,
         Amount MaxWithdrawal,
         ImmutableList<Withdraw>? Withdraws)
@@ -14,7 +14,7 @@ namespace PBTKata.Bank
         {
             return this with
             {
-                Balance = Balance - command.Amount,
+                Balance = Balance - command.Amount.Value,
                 Withdraws = Withdraws.Add(command)
             };
         }

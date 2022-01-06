@@ -6,7 +6,6 @@ namespace PBTKata
 {
     public static class OptionExtensions
     {
-        [Pure]
         public static T GetUnsafe<T>(this Option<T> opt) =>
             opt.IfNone(() => throw new InvalidOperationException("Can not Get value on None"));
     }
