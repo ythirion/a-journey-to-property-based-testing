@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Bank\" />
+    <None Remove="LanguageExt.Core" />
+    <None Remove="Math\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Bank\" />
+    <Folder Include="Math\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LanguageExt.Core" Version="4.0.3" />
+  </ItemGroup>
+</Project>

@@ -4,12 +4,6 @@
 # Log file
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
 # Package Files #
 *.jar
 *.war
@@ -21,3 +15,44 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+*.DS_Store
+*.swp
+*~
+*.class
+*.tasty
+target/
+logs/
+.bsp/
+.bloop
+.dotty-ide-artifact
+.dotty-ide.json
+.idea
+.metals
+.vscode
+*.csv
+*.dat
+*.ipr
+*.iws
+
+*.log
+
+# sbt specific
+.cache/
+.history/
+.lib/
+dist/*
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+.scannerwork
+
+# .NET
+.vs/
+bin/
+obj/
