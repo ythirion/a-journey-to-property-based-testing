@@ -1,11 +1,8 @@
-﻿using System;
-using FluentAssertions;
-using FsCheck;
+﻿using FsCheck;
 using FsCheck.Xunit;
-using Xunit;
 using static PBTKata.Math.Calculator;
 
-namespace PBTKata.Tests.Math
+namespace PBTKata.Tests.Math.Solution
 {
     public class CalculatorProperties
     {
