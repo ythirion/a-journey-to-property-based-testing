@@ -19,7 +19,7 @@ namespace PBTKata.Rentals
             Rentals = rentals;
         }
 
-        public Either<String, String> CalulateRental()
+        public Either<String, String> CalculateRental()
         {
             if(Rentals.IsNull() || Rentals.Count == 0)
             {

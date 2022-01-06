@@ -10,9 +10,8 @@ namespace PBTKata.Tests.Rentals.Solution
     {
         [Property]
         public Property NewImplementationShouldReturnTheSameResult(List<Rental> rentals)
-            => (new RentalCalculator(rentals).CalulateRental() ==
-                new NewRentalCalculator(rentals).CalulateRental())
+            => (new RentalCalculator(rentals).CalculateRental() ==
+                StatementPrinter.Print(rentals.ToSeq()))
             .ToProperty();
     }
 }
-

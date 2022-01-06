@@ -17,7 +17,7 @@ public class NewRentalCalculator
         Rentals = rentals;
     }
 
-    public Either<String, String> CalulateRental()
+    public Either<String, String> CalculateRental()
     {
         if(Rentals.IsNull() || Rentals.Count == 0)
         {
@@ -52,8 +52,8 @@ public class NewRentalCalculator
 ```csharp
 [Property]
 public Property NewImplementationShouldReturnTheSameResult(List<Rental> rentals)
-    => (new RentalCalculator(rentals).CalulateRental() ==
-        new NewRentalCalculator(rentals).CalulateRental())
+    => (new RentalCalculator(rentals).CalculateRental() ==
+        new NewRentalCalculator(rentals).CalculateRental())
     .ToProperty();
 ```
 
@@ -68,145 +68,238 @@ public Property NewImplementationShouldReturnTheSameResult(List<Rental> rentals)
 * Identify code smells
 
 ```csharp
-// Why would we need to instantiate a new calculator with Rentals at each call ?'
+// Why would we need to instantiate a new calculator with Rentals at each call ?
 // Not a calculator -> String as return
-class NewRentalCalculator(val rentals: List[Rental]) {
-  // var is evil
-  private var _amount     = .0
-  private var _calculated = false
+public class NewRentalCalculator
+{
+    // Avoid using List : favor Immutable Collections
+    public List<Rental> Rentals { get; init; }
+    // Why expose states to the outside world ?
+    public bool Calculated { get { return calculated; } }
+    public double Amount { get { return amount; } }
 
-  // Do not need a state to make a query
-  def amount(): Double = _amount
-  def calculated(): Boolean = _calculated
+    // Do not need a state to make a query...
+    private double amount = 0;
+    private bool calculated = false;
 
-  // this function breaks the Command Query separation principle
-  // Not a pure function
-  def calculateRental(): Either[String, String] = {
-    if (rentals.isEmpty)
-      Left("No rentals !!!")
-    else {
-      // could be simplified by a fold
-      val result = new StringBuilder
-
-      for (rental <- rentals) {
-        // mutation is evil
-        // checking the state here...
-        if (!_calculated) this._amount += rental.amount
-        result.append(formatLine(rental, _amount))
-      }
-      result.append(f"Total amount | ${this._amount}%.2f")
-      
-      // mutation is evil
-      _calculated = true
-
-      Right(result.toString)
+    public NewRentalCalculator(List<Rental> rentals)
+    {
+        Rentals = rentals;
     }
-  }
 
-  // Unused amount
-  private def formatLine(rental: Rental, amount: Double) =
-    f"${rental.date} : ${rental.label} | ${rental.amount}%.2f${lineSeparator()}"
+    // this function breaks the Command Query separation principle
+    // Not a pure function : lie to us because it changes internal state without saying it
+    public Either<String, String> CalculateRental()
+    {
+        if(Rentals.IsNull() || Rentals.Count == 0)
+        {
+            return Left("No rentals !!!");
+        }
+        else
+        {
+            // We could fold the collection instead of instantiating this StringBuilder
+            var result = new StringBuilder();
+
+            // Old school loop : favor fold for this purpose
+            foreach (var rental in Rentals)
+            {
+                // checking internal state
+                if(!calculated)
+                {
+                    // mutate internal state
+                    this.amount += rental.Amount;
+                    result.AppendLine(FormatLine(rental, amount));
+                }
+            }
+            result.AppendLine($"Total amount | {this.amount:N2}");
+
+            // mutation is evil
+            calculated = true;
+
+            return Right(result.ToString());
+        }
+    }
+
+    // unused amount parameter
+    private static String FormatLine(Rental rental, Double amount) =>
+        $"{rental.Date} : {rental.Label} | {rental.Amount:N2}";
 }
 ```
 
-* Remove state / mutation
+* Remove state / mutation (amount and calculated)
 ```csharp
-class NewRentalCalculator(val rentals: List[Rental]) {
-  def calculateRental(): Either[String, String] = {
-    if (rentals.isEmpty)
-      Left("No rentals !!!")
-    else {
-      val result = new StringBuilder
-      var amount = 0d
+public class NewRentalCalculator
+{
+    public List<Rental> Rentals { get; init; }
 
-      for (rental <- rentals) {
-        amount += rental.amount
-        result.append(formatLine(rental, amount))
-      }
-      result.append(f"Total amount | ${amount}%.2f")
-
-      Right(result.toString)
+    public NewRentalCalculator(List<Rental> rentals)
+    {
+        Rentals = rentals;
     }
-  }
 
-  private def formatLine(rental: Rental, amount: Double) =
-    f"${rental.date} : ${rental.label} | ${rental.amount}%.2f${lineSeparator()}"
+    public Either<String, String> CalculateRental()
+    {
+        if(Rentals.IsNull() || Rentals.Count == 0)
+        {
+            return Left("No rentals !!!");
+        }
+        else
+        {
+            var amount = 0d;
+            var result = new StringBuilder();
+
+            foreach (var rental in Rentals)
+            {
+                amount += rental.Amount;
+                result.AppendLine(FormatLine(rental, amount));
+            }
+            result.AppendLine($"Total amount | {amount:N2}");
+
+            return Right(result.ToString());
+        }
+    }
+
+    private static String FormatLine(Rental rental, Double amount) =>
+        $"{rental.Date} : {rental.Label} | {rental.Amount:N2}";
 }
 ```
 
-* Remove amount
+* Review encapsulation and change rentals type (Use `Seq<Rental>`)
+```csharp
+public class NewRentalCalculator
+{
+    private readonly Seq<Rental> rentals;
+
+    public NewRentalCalculator(List<Rental> rentals) =>
+        this.rentals = rentals.ToSeq();
+
+    public Either<String, String> CalculateRental()
+    {
+        if (rentals.IsEmpty)
+        {
+            return Left("No rentals !!!");
+        }
+        else
+        {
+            var amount = 0d;
+            var result = new StringBuilder();
+
+            foreach (var rental in rentals)
+            {
+                amount += rental.Amount;
+                result.AppendLine(FormatLine(rental, amount));
+            }
+            result.AppendLine($"Total amount | {amount:N2}");
+
+            return Right(result.ToString());
+        }
+    }
+
+    private static String FormatLine(Rental rental, Double amount) =>
+        $"{rental.Date} : {rental.Label} | {rental.Amount:N2}";
+}
+```
+
+* Remove amount and use Seq<Rental>
 
 ```csharp
-class NewRentalCalculator(val rentals: List[Rental]) {
-  def calculateRental(): Either[String, String] = {
-    if (rentals.isEmpty)
-      Left("No rentals !!!")
-    else {
-      val result = new StringBuilder
+public class NewRentalCalculator
+{
+    private readonly Seq<Rental> rentals;
 
-      for (rental <- rentals) {
-        result.append(formatLine(rental))
-      }
-      result.append(f"Total amount | ${rentals.map(_.amount).sum}%.2f")
+    public NewRentalCalculator(List<Rental> rentals) =>
+        this.rentals = rentals.ToSeq();
 
-      Right(result.toString)
+    public Either<String, String> CalculateRental()
+    {
+        if (rentals.IsEmpty)
+        {
+            return Left("No rentals !!!");
+        }
+        else
+        {
+            var result = new StringBuilder();
+
+            foreach (var rental in rentals)
+            {
+                result.AppendLine(FormatLine(rental));
+            }
+            result.AppendLine($"Total amount | {rentals.Sum(r => r.Amount):N2}");
+
+            return Right(result.ToString());
+        }
     }
-  }
 
-  private def formatLine(rental: Rental) =
-    f"${rental.date} : ${rental.label} | ${rental.amount}%.2f${lineSeparator()}"
+    private static String FormatLine(Rental rental) =>
+        $"{rental.Date} : {rental.Label} | {rental.Amount:N2}";
 }
 ```
 
 * Use fold to simplify iteration on rentals
 
 ```csharp
-class NewRentalCalculator(val rentals: List[Rental]) {
-  def calculateRental(): Either[String, String] = {
-    if (rentals.isEmpty) Left("No rentals !!!")
-    else Right(statementFrom(rentals) + formatTotal(rentals))
-  }
+public class NewRentalCalculator
+{
+    private readonly Seq<Rental> rentals;
 
-  private def statementFrom(rentals: List[Rental]): String =
-    rentals.foldLeft("")((statement, rental) => statement + formatLine(rental))
+    public NewRentalCalculator(List<Rental> rentals) =>
+        this.rentals = rentals.ToSeq();
 
-  private def formatLine(rental: Rental) =
-    f"${rental.date} : ${rental.label} | ${rental.amount}%.2f${lineSeparator()}"
+    public Either<String, String> CalculateRental()
+    {
+        if (rentals.IsEmpty)
+        {
+            return Left("No rentals !!!");
+        }
+        else
+        {
+            return Right(StatementFrom(rentals) + FormatTotal(rentals));
+        }
+    }
 
-  private def formatTotal(rentals: List[Rental]): String =
-    f"Total amount | ${rentals.map(_.amount).sum}%.2f"
+    private static String StatementFrom(Seq<Rental> rentals) =>
+        rentals.Fold("", (statement, rental) => statement + FormatLine(rental));
+
+    private static String FormatTotal(Seq<Rental> rentals) =>
+        $"Total amount | {rentals.Sum(r => r.Amount):N2}{Environment.NewLine}";
+
+    private static String FormatLine(Rental rental) =>
+        $"{rental.Date} : {rental.Label} | {rental.Amount:N2}{Environment.NewLine}";
 }
 ```
 
-* Change Calculator to object / use better names
+* Use better name / Make the function pure / clean the class
 
 ```csharp
-object NewRentalStatementPrinter {
-  def print(rentals: List[Rental]): Either[String, String] = {
-    if (rentals.isEmpty) Left("No rentals !!!")
-    else Right(statementFrom(rentals) + formatTotal(rentals))
-  }
+public static class StatementPrinter
+{
+    public static Either<String, String> Print(Seq<Rental> rentals) =>
+        rentals.IsEmpty ?
+            Left("No rentals !!!") :
+            Right(StatementFrom(rentals) + FormatTotal(rentals));
 
-  private def statementFrom(rentals: List[Rental]): String =
-    rentals.foldLeft("")((statement, rental) => statement + formatLine(rental))
+    private static String StatementFrom(Seq<Rental> rentals) =>
+        rentals.Fold("", (statement, rental) => statement + FormatLine(rental));
 
-  private def formatLine(rental: Rental) =
-    f"${rental.date} : ${rental.label} | ${rental.amount}%.2f${lineSeparator()}"
+    private static String FormatTotal(Seq<Rental> rentals) =>
+        $"Total amount | {rentals.Sum(r => r.Amount):N2}{Environment.NewLine}";
 
-  private def formatTotal(rentals: List[Rental]): String =
-    f"Total amount | ${rentals.map(_.amount).sum}%.2f"
+    private static String FormatLine(Rental rental) =>
+        $"{rental.Date} : {rental.Label} | {rental.Amount:N2}{Environment.NewLine}";
 }
 ```
 
 * Adapt the call in the property as well
 
 ```csharp
-  "new implementation" should "have the same result" in {
-    check(forAll { rentals: List[Rental] =>
-      new RentalCalculator(rentals).calculateRental ==
-        NewRentalStatementPrinter.print(rentals)
-    })
-  }
+[Property]
+public Property NewImplementationShouldReturnTheSameResult(List<Rental> rentals)
+    => (new RentalCalculator(rentals).CalculateRental() ==
+        StatementPrinter.Print(rentals.ToSeq()))
+    .ToProperty();
 ```
 
-We have now a new better implementation without having introduced regression and without having spent a lot of time to identify test cases and written those
+* We have now a new better implementation without having introduced regression and without having spent a lot of time to identify test cases and written those
+* We can now plug the callers and :
+    * delete the old implementation
+    * our `RentalNewImplementationProperties` file as well
