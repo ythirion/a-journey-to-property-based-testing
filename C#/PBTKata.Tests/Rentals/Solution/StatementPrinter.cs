@@ -9,20 +9,20 @@ namespace PBTKata.Tests.Rentals.Solution
 {
     public static class StatementPrinter
     {
-        public static Either<String, String> Print(Seq<Rental> rentals) =>
+        public static Either<string, string> Print(Seq<Rental> rentals) =>
             rentals.IsEmpty ?
                 Left("No rentals !!!") :
                 Right(StatementFrom(rentals) + FormatTotal(rentals));
 
-        private static String StatementFrom(Seq<Rental> rentals) =>
+        private static string StatementFrom(Seq<Rental> rentals) =>
             rentals.Fold("", (statement, rental) => statement + FormatLine(rental));
 
-        private static String FormatTotal(Seq<Rental> rentals) =>
+        private static string FormatTotal(Seq<Rental> rentals) =>
             ToLine($"Total amount | {rentals.Sum(r => r.Amount):N2}");
 
-        private static String FormatLine(Rental rental) =>
+        private static string FormatLine(Rental rental) =>
             ToLine($"{rental.Date} : {rental.Label} | {rental.Amount:N2}");
 
-        private static String ToLine(String str) => $"{str}{Environment.NewLine}";
+        private static string ToLine(string str) => $"{str}{Environment.NewLine}";
     }
 }

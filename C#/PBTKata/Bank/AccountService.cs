@@ -5,10 +5,10 @@ namespace PBTKata.Bank
 {
     public static class AccountService
     {
-        public static Either<String, Account> Withdraw(Account account, Withdraw command) =>
+        public static Either<string, Account> Withdraw(Account account, Withdraw command) =>
             HasAlreadyBeenApplied(account, command) ? account : Apply(account, command);
 
-        private static Either<String, Account> Apply(Account account, Withdraw command)
+        private static Either<string, Account> Apply(Account account, Withdraw command)
         {
             if (ExceedMaxwithdrawal(account, command))
                 return Left($"Amount exceeding your limit of {account.MaxWithdrawal}");

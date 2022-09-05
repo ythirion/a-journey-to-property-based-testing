@@ -13,12 +13,12 @@ namespace PBTKata.Tests.Bank.Solution
     {
         public static IEnumerable<object[]> Table => new List<object[]>
         {
-            new object[] { 10_000m, false, 1200m, 1199.99m, Right(8800.01m) },
-            new object[] { 0, true, 500m, 50m, Right(-50m) },
-            new object[] { 1, false, 1200m, 1199.99m, Left("Insufficient balance to withdraw") },
-            new object[] { 0, false, 500m, 50m, Left("Insufficient balance to withdraw") },
-            new object[] { 10_000, true, 1200m, 1200.0001, Left("Amount exceeding your limit of") },
-            new object[] { 0, false, 500m, 500m, Left("Amount exceeding your limit of") }
+            new object[] {10_000m, false, 1200m, 1199.99m, Right(8800.01m)},
+            new object[] {0, true, 500m, 50m, Right(-50m)},
+            new object[] {1, false, 1200m, 1199.99m, Left("Insufficient balance to withdraw")},
+            new object[] {0, false, 500m, 50m, Left("Insufficient balance to withdraw")},
+            new object[] {10_000, true, 1200m, 1200.0001, Left("Amount exceeding your limit of")},
+            new object[] {0, false, 500m, 500m, Left("Amount exceeding your limit of")}
         };
 
         [Theory]
@@ -28,11 +28,12 @@ namespace PBTKata.Tests.Bank.Solution
             bool isOverdraftAuthorized,
             decimal maxWithdrawal,
             decimal withdrawAmount,
-            Either<String, decimal> expectedResult)
+            Either<string, decimal> expectedResult)
         {
             var command = new Withdraw(Guid.NewGuid(), withdrawAmount.ToAmountUnsafe(), DateTime.Now);
             var result = AccountService.Withdraw(
-                new Account(balance, isOverdraftAuthorized, maxWithdrawal.ToAmountUnsafe(), ImmutableList<Withdraw>.Empty),
+                new Account(balance, isOverdraftAuthorized, maxWithdrawal.ToAmountUnsafe(),
+                    ImmutableList<Withdraw>.Empty),
                 command);
 
             expectedResult.Match(

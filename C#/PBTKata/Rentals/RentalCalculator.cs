@@ -19,7 +19,7 @@ namespace PBTKata.Rentals
             Rentals = rentals;
         }
 
-        public Either<String, String> CalculateRental()
+        public Either<string, string> CalculateRental()
         {
             if(Rentals.IsNull() || Rentals.Count == 0)
             {
@@ -44,7 +44,7 @@ namespace PBTKata.Rentals
             }
         }
 
-        private static String FormatLine(Rental rental, Double amount) =>
+        private static string FormatLine(Rental rental, double amount) =>
             $"{rental.Date} : {rental.Label} | {rental.Amount:N2}";
     }
 }

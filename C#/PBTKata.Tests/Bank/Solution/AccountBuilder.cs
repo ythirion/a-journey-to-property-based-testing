@@ -1,5 +1,4 @@
-﻿using System;
-using FsCheck;
+﻿using FsCheck;
 using PBTKata.Bank;
 
 namespace PBTKata.Tests.Bank.Solution
@@ -20,21 +19,21 @@ namespace PBTKata.Tests.Bank.Solution
                 .ToAmountUnsafe();
 
         public static Account WithEnoughMoney(this Account account, Withdraw command) =>
-            account with { Balance = (command.Amount + ArbitraryAmount()).Value };
+            account with {Balance = (command.Amount + ArbitraryAmount()).Value};
 
         public static Account WithInsufficientBalance(this Account account, Withdraw command) =>
-            account with { Balance = (command.Amount - ArbitraryAmount()).Value };
+            account with {Balance = (command.Amount - ArbitraryAmount()).Value};
 
         public static Account WithdrawAmountReachingMaxWithdrawal(this Account account, Withdraw command) =>
-            account with { MaxWithdrawal = command.Amount - ArbitraryAmount() };
+            account with {MaxWithdrawal = command.Amount - ArbitraryAmount()};
 
         public static Account WithoutReachingMaxWithdrawal(this Account account, Withdraw command) =>
-            account with { MaxWithdrawal = command.Amount + ArbitraryAmount() };
+            account with {MaxWithdrawal = command.Amount + ArbitraryAmount()};
 
         public static Account WithoutOverDraftAuthorized(this Account account) =>
-            account with { IsOverdraftAuthorized = false };
+            account with {IsOverdraftAuthorized = false};
 
         public static Account WithOverDraftAuthorized(this Account account) =>
-            account with { IsOverdraftAuthorized = true };
+            account with {IsOverdraftAuthorized = true};
     }
 }

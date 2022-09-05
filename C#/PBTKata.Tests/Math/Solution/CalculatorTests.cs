@@ -8,10 +8,10 @@ namespace PBTKata.Tests.Math.Solution
 {
     public class CalculatorTests
     {
-        private readonly Random random = new();
-        private readonly int times = 100;
+        private readonly Random _random = new();
+        private const int times = 100;
 
-        private int RandomInt() => random.Next(int.MinValue, int.MaxValue);
+        private int RandomInt() => _random.Next(int.MinValue, int.MaxValue);
 
         [Fact]
         public void Return4WhenIAdd1To3() => Add(1, 3).Should().Be(4);
