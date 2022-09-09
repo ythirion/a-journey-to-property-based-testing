@@ -1,7 +1,8 @@
 ﻿using FsCheck;
-using FsCheck.Xunit;
 using LanguageExt;
 using Xunit;
+using static FsCheck.Arb.Default;
+using static FsCheck.Prop;
 using static LanguageExt.Option<double>;
 using static PBTKata.Post.PostalParcel;
 using static PBTKata.Post.PostalParcelService;
@@ -12,21 +13,21 @@ namespace PBTKata.Tests.Post.Solution
     {
         [Fact]
         public void MaxDeliveryCostWhenWeightGreaterThanMaxWeight()
-            => Prop.ForAll(Arb.Default.Float().Filter(x => x > MaxWeight),
+            => ForAll(Float().Filter(x => x > MaxWeight),
                     weight => CalculateCost(weight) == MaxDeliveryCost)
-                   .QuickCheckThrowOnFailure();
+                .QuickCheckThrowOnFailure();
 
         [Fact]
         public void MinDeliveryCostWhenWeightLowerOrEqualsMaxWeight()
-            => Prop.ForAll(Arb.Default.Float().Filter(x => x > 0 && x <= MaxWeight),
+            => ForAll(Float().Filter(x => x > 0 && x <= MaxWeight),
                     weight => CalculateCost(weight) == MinDeliveryCost)
-                    .QuickCheckThrowOnFailure();
+                .QuickCheckThrowOnFailure();
 
         [Fact]
         public void NoneWhenWeightLowerOrEquals0()
-            => Prop.ForAll(Arb.Default.Float().Filter(x => x <= 0),
+            => ForAll(Float().Filter(x => x <= 0),
                     weight => CalculateCost(weight) == None)
-                    .QuickCheckThrowOnFailure();
+                .QuickCheckThrowOnFailure();
 
         private static Option<double> CalculateCost(double weight)
             => CalculateDeliveryCosts(From(weight));

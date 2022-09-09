@@ -1,5 +1,6 @@
 ﻿using FsCheck;
 using PBTKata.Bank;
+using static FsCheck.Arb.Default;
 
 namespace PBTKata.Tests.Bank.Solution
 {
@@ -11,7 +12,7 @@ namespace PBTKata.Tests.Bank.Solution
     public static class AccountExtensions
     {
         private static Amount ArbitraryAmount() =>
-            Arb.Default.Decimal()
+            Decimal()
                 .Filter(x => x > 0)
                 .Generator
                 .Sample(1, 1)
